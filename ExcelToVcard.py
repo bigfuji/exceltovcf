@@ -7,7 +7,7 @@ file= 'Contacts.xlsx' #If your excel file in same directory with python file u c
 excelfile= pd.ExcelFile(file)
 column = excelfile.parse('Workers')
 s = ""
-begin = "BEGIN:VCARD\nVERSION:2.1"
+begin = "BEGIN:VCARD\nVERSION:3.0"
 
 for i in range(len(column)):
     fName=""
@@ -22,6 +22,7 @@ for i in range(len(column)):
     if(str(column["Phone"][i])!="nan"):
         if(str(column["Name"][i])!="nan"):
             fName=str(column["Name"][i])
+            print(fName)
         if(str(column["Surname"][i])!="nan"):
             sName=str(column["Surname"][i])
         if("Suffix" in column.columns.values):
@@ -40,7 +41,8 @@ for i in range(len(column)):
         secN="\nN:"+ sName + ";" + fName + ";"+mName.strip()+";"+prefix.strip()+";"+suffix.strip()
         secFN="\nFN:" + prefix + "" + fName + mName + sName + "," + suffix
         # secPhone="\nTEL;CELL:+"+str(column["Phone"][i]).split(".")[0] #v1
-        secPhone="\nTEL;CELL:+994"+str(column["Phone"][i]) #v2
+        secPhone="\nTEL;type=CELL;type=VOICE:"+str(column["Phone"][i]) #v2
+        secTeleWork="\nTEL;type=WORK;type=VOICE:"+str(column["TeleWork"][i]) #v2
         # print("Phone ",secPhone) #For testing purposes
         if("Mail" in column.columns.values):
             secMail=""
@@ -54,7 +56,7 @@ for i in range(len(column)):
             secTit=""
             if(str(column["Title"][i]) != "nan"):
                 secTit="\nTITLE:" + str(column["Title"][i])
-        s+=begin+secN + secFN +secPhone + secMail+ secOrg+ secTit+"\nEND:VCARD\n"
+        s+=begin+secN + secFN +secPhone + secTeleWork + secMail+ secOrg+ secTit+"\nEND:VCARD\n"
 text_file = open("Exported.vcf", "w",encoding="utf-8") #Encoding utf-8 added
 text_file.write(s)
 text_file.close()
